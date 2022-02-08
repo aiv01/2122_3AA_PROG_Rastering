@@ -2,6 +2,7 @@
 #define SCENE_H
 #include "SDL.h"
 #include "screen.h"
+
 typedef struct scene_t {
     screen_t* screen;
 } scene;

@@ -18,10 +18,9 @@ void dda_line_raster(screen_t* screen, int x1, int y1, int x2, int y2) {
 
     float x = x1;
     float y = y1;
-    //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+
     for(int i=0; i <= steps; ++i) {
-        screen_put_pixel(screen, x, y);
-        //SDL_RenderDrawPoint(renderer, x, y);
+        screen_put_pixel(screen, x, y, color_red());
         x += incr_x;
         y += incr_y;
     }
