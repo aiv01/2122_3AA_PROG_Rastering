@@ -11,6 +11,16 @@ static color_t color_red() {
     return (color_t){255, 0, 0, 255};
 }
 
+static color_t color_yellow() {
+    return (color_t){255, 255, 0, 255};
+}
+
+static color_t color_green() {
+    return (color_t){0, 255, 0, 255};
+}
+
+
+
 
 typedef struct screen_t {
     int width;

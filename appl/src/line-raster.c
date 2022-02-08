@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "screen.h"
 
-void dda_line_raster(screen_t* screen, int x1, int y1, int x2, int y2) {
+void dda_line_raster(screen_t* screen, int x1, int y1, int x2, int y2, color_t color) {
     //distance
     int dx = abs(x1 - x2);
     int dy = abs(y1 - y2);
@@ -20,7 +20,7 @@ void dda_line_raster(screen_t* screen, int x1, int y1, int x2, int y2) {
     float y = y1;
 
     for(int i=0; i <= steps; ++i) {
-        screen_put_pixel(screen, x, y, color_red());
+        screen_put_pixel(screen, x, y, color);
         x += incr_x;
         y += incr_y;
     }

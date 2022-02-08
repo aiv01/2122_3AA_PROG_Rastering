@@ -10,8 +10,12 @@ scene* scene_create(int screen_width, int screen_height, SDL_Renderer* r) {
 }
 
 void scene_update(scene* s, float delta_time) {
-    dda_line_raster(s->screen, 10, 10, 130, 130);
-    dda_line_raster(s->screen, 100, 100, 230, 530);
+    
+    dda_line_raster(s->screen, 150, 200, 200, 100, color_red());
+    
+    dda_line_raster(s->screen, 100, 100, 150, 200, color_yellow());
+    
+    dda_line_raster(s->screen, 100, 100, 200, 100, color_green());
 
     screen_blit(s->screen);
 }
