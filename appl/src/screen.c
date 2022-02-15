@@ -1,6 +1,7 @@
 #include "screen.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <SDL.h>
 
 screen_t* screen_new(int width, int height, SDL_Renderer* renderer) {
     screen_t* screen = (screen_t*)malloc(sizeof(screen_t));

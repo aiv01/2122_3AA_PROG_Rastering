@@ -1,10 +1,10 @@
 #pragma once
-#include <SDL.h>
+//#include <SDL.h>
 typedef struct color_t {
-    Uint8 r;
-    Uint8 g;
-    Uint8 b;
-    Uint8 a;
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
+    unsigned char a;
 } color_t;
 
 static color_t color_red() {
@@ -19,15 +19,23 @@ static color_t color_green() {
     return (color_t){0, 255, 0, 255};
 }
 
+struct SDL_Renderer;
+typedef struct SDL_Renderer SDL_Renderer;
 
+struct SDL_Texture;
+typedef struct SDL_Texture SDL_Texture;
 
+/*
+struct Uint8;
+typedef struct Uint8 Uint8;
+*/
 
 typedef struct screen_t {
     int width;
     int height;
     SDL_Renderer* renderer;
     SDL_Texture* texture;
-    Uint8* color_buffer;
+    unsigned char* color_buffer;
 } screen_t;
 
 screen_t* screen_new(int width, int height, SDL_Renderer* renderer);
