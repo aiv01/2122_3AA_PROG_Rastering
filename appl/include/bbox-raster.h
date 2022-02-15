@@ -1,11 +1,7 @@
 #pragma once
 #include "screen.h"
 #include <stdbool.h>
-
-typedef struct vector2_t {
-    int x;
-    int y;
-} vector2_t;
+#include "vector.h"
 
 int _min3(int v1, int v2, int v3);
 int _max3(int v1, int v2, int v3);

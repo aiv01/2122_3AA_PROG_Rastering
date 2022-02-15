@@ -2,9 +2,11 @@
 #define SCENE_H
 #include "SDL.h"
 #include "screen.h"
+#include "camera.h"
 
 typedef struct scene_t {
     screen_t* screen;
+    camera_t* camera;
 } scene;
 
 scene* scene_create(int w, int h, SDL_Renderer*);
