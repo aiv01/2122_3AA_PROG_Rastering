@@ -35,3 +35,25 @@ CLOVE_TEST(ObjReadAllQuadVertex)
 
    obj_parser_free(mesh);
 }
+
+CLOVE_TEST(ObjReadAllQuadVTexture)
+{
+   obj_mesh_t* mesh = obj_parser_parse("bin\\test\\resources\\quad.obj");
+
+   CLOVE_INT_EQ(mesh->vtexture_count, 4);
+   CLOVE_INT_EQ(mesh->vtexture_size, 8);
+
+   CLOVE_FLOAT_EQ(mesh->vtexture[0],1.f);
+   CLOVE_FLOAT_EQ(mesh->vtexture[1],1.f);
+
+   CLOVE_FLOAT_EQ(mesh->vtexture[2],0.f);
+   CLOVE_FLOAT_EQ(mesh->vtexture[3],1.f);
+
+   CLOVE_FLOAT_EQ(mesh->vtexture[4],0.f);
+   CLOVE_FLOAT_EQ(mesh->vtexture[5],0.f);
+
+   CLOVE_FLOAT_EQ(mesh->vtexture[6],1.f);
+   CLOVE_FLOAT_EQ(mesh->vtexture[7],0.f);
+   
+   obj_parser_free(mesh);
+}
