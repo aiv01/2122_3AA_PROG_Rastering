@@ -163,22 +163,53 @@ static obj_mesh_t *obj_parser_parse(char *obj_path)
 
     mesh->triangles_count = mesh->faces_count;
     mesh->triangles = malloc(sizeof(obj_triangle_t) * mesh->triangles_count);
-    
+    int vertex_index;
+    int uv_index;
+    int normal_index;
+
     for(int i = 0; i < mesh->triangles_count; i++)
     {
-        int vertex_index = (mesh->faces[i * 9 + 0] - 1) * 3;
+        vertex_index = (mesh->faces[i * 9 + 0] - 1) * 3;
         mesh->triangles[i].v1.position.x = mesh->vertices[vertex_index + 0];
         mesh->triangles[i].v1.position.y = mesh->vertices[vertex_index + 1];
         mesh->triangles[i].v1.position.z = mesh->vertices[vertex_index + 2];
 
-        int uv_index = (mesh->faces[i * 9 + 1] - 1) * 2;
+        uv_index = (mesh->faces[i * 9 + 1] - 1) * 2;
         mesh->triangles[i].v1.uv.x = mesh->vtexture[uv_index + 0];
         mesh->triangles[i].v1.uv.y = mesh->vtexture[uv_index + 1];
 
-        int normal_index = (mesh->faces[i * 9 + 2] - 1) * 3;
+        normal_index = (mesh->faces[i * 9 + 2] - 1) * 3;
         mesh->triangles[i].v1.normal.x = mesh->vnormals[normal_index + 0];
         mesh->triangles[i].v1.normal.y = mesh->vnormals[normal_index + 1];
         mesh->triangles[i].v1.normal.z = mesh->vnormals[normal_index + 2];
+
+        vertex_index = (mesh->faces[i * 9 + 3] - 1) * 3;
+        mesh->triangles[i].v2.position.x = mesh->vertices[vertex_index + 0];
+        mesh->triangles[i].v2.position.y = mesh->vertices[vertex_index + 1];
+        mesh->triangles[i].v2.position.z = mesh->vertices[vertex_index + 2];
+
+        uv_index = (mesh->faces[i * 9 + 4] - 1) * 2;
+        mesh->triangles[i].v2.uv.x = mesh->vtexture[uv_index + 0];
+        mesh->triangles[i].v2.uv.y = mesh->vtexture[uv_index + 1];
+
+        normal_index = (mesh->faces[i * 9 + 5] - 1) * 3;
+        mesh->triangles[i].v2.normal.x = mesh->vnormals[normal_index + 0];
+        mesh->triangles[i].v2.normal.y = mesh->vnormals[normal_index + 1];
+        mesh->triangles[i].v2.normal.z = mesh->vnormals[normal_index + 2];
+
+        vertex_index = (mesh->faces[i * 9 + 6] - 1) * 3;
+        mesh->triangles[i].v3.position.x = mesh->vertices[vertex_index + 0];
+        mesh->triangles[i].v3.position.y = mesh->vertices[vertex_index + 1];
+        mesh->triangles[i].v3.position.z = mesh->vertices[vertex_index + 2];
+
+        uv_index = (mesh->faces[i * 9 + 7] - 1) * 2;
+        mesh->triangles[i].v3.uv.x = mesh->vtexture[uv_index + 0];
+        mesh->triangles[i].v3.uv.y = mesh->vtexture[uv_index + 1];
+
+        normal_index = (mesh->faces[i * 9 + 8] - 1) * 3;
+        mesh->triangles[i].v3.normal.x = mesh->vnormals[normal_index + 0];
+        mesh->triangles[i].v3.normal.y = mesh->vnormals[normal_index + 1];
+        mesh->triangles[i].v3.normal.z = mesh->vnormals[normal_index + 2];
     }
 
     return mesh;
