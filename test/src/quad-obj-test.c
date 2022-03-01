@@ -41,20 +41,20 @@ CLOVE_TEST(ObjReadAllQuadVTexture)
 {
    obj_mesh_t *mesh = obj_parser_parse("bin\\test\\resources\\quad.obj");
 
-   CLOVE_INT_EQ(mesh->vtexture_count, 4);
-   CLOVE_INT_EQ(mesh->vtexture_size, 8);
+   CLOVE_INT_EQ(mesh->uvs_count, 4);
+   CLOVE_INT_EQ(mesh->uvs_size, 8);
 
-   CLOVE_FLOAT_EQ(mesh->vtexture[0], 1.f);
-   CLOVE_FLOAT_EQ(mesh->vtexture[1], 1.f);
+   CLOVE_FLOAT_EQ(mesh->uvs[0], 1.f);
+   CLOVE_FLOAT_EQ(mesh->uvs[1], 1.f);
 
-   CLOVE_FLOAT_EQ(mesh->vtexture[2], 0.f);
-   CLOVE_FLOAT_EQ(mesh->vtexture[3], 1.f);
+   CLOVE_FLOAT_EQ(mesh->uvs[2], 0.f);
+   CLOVE_FLOAT_EQ(mesh->uvs[3], 1.f);
 
-   CLOVE_FLOAT_EQ(mesh->vtexture[4], 0.f);
-   CLOVE_FLOAT_EQ(mesh->vtexture[5], 0.f);
+   CLOVE_FLOAT_EQ(mesh->uvs[4], 0.f);
+   CLOVE_FLOAT_EQ(mesh->uvs[5], 0.f);
 
-   CLOVE_FLOAT_EQ(mesh->vtexture[6], 1.f);
-   CLOVE_FLOAT_EQ(mesh->vtexture[7], 0.f);
+   CLOVE_FLOAT_EQ(mesh->uvs[6], 1.f);
+   CLOVE_FLOAT_EQ(mesh->uvs[7], 0.f);
 
    obj_parser_free(mesh);
 }
@@ -63,12 +63,12 @@ CLOVE_TEST(ObjReadAllQuadNormals)
 {
    obj_mesh_t *mesh = obj_parser_parse("bin\\test\\resources\\quad.obj");
 
-   CLOVE_INT_EQ(mesh->vnormals_count, 1);
-   CLOVE_INT_EQ(mesh->vnormals_size, 3);
+   CLOVE_INT_EQ(mesh->normals_count, 1);
+   CLOVE_INT_EQ(mesh->normals_size, 3);
 
-   CLOVE_FLOAT_EQ(mesh->vnormals[0], 0.f);
-   CLOVE_FLOAT_EQ(mesh->vnormals[1], 0.f);
-   CLOVE_FLOAT_EQ(mesh->vnormals[2], 1.f);
+   CLOVE_FLOAT_EQ(mesh->normals[0], 0.f);
+   CLOVE_FLOAT_EQ(mesh->normals[1], 0.f);
+   CLOVE_FLOAT_EQ(mesh->normals[2], 1.f);
 
    obj_parser_free(mesh);
 }

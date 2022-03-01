@@ -20,9 +20,9 @@ int _det(vector2_t* p, vector2_t* v1, vector2_t* v2) {
 
 bool bbox_is_point_in_triangle(vector2_t* P, vector2_t* A, vector2_t* B, vector2_t* C) {
     bool b1, b2, b3;
-    b1 = _det(P, A, B) < 0;
-    b2 = _det(P, B, C) < 0;
-    b3 = _det(P, C, A) < 0;
+    b1 = _det(P, A, B) <= 0;
+    b2 = _det(P, B, C) <= 0;
+    b3 = _det(P, C, A) <= 0;
     return (b1 == b2) && (b2 == b3);
 }
 
