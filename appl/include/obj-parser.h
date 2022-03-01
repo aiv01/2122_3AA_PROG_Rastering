@@ -15,6 +15,10 @@ typedef struct obj_mesh
     float *vnormals;
     int vnormals_size;
     int vnormals_count;
+
+    int *faces;
+    int faces_count;
+    int faces_size;
 } obj_mesh_t;
 
 static obj_mesh_t *obj_parser_parse(char *obj_path)
@@ -29,6 +33,7 @@ static obj_mesh_t *obj_parser_parse(char *obj_path)
     mesh->vertices_count = 0;
     mesh->vtexture_count = 0;
     mesh->vnormals_count = 0;
+    mesh->faces_count = 0;
 
     while (fgets(buffer, 1024, file))
     {
@@ -46,20 +51,28 @@ static obj_mesh_t *obj_parser_parse(char *obj_path)
         {
             ++mesh->vnormals_count;
         }
+
+        if (!strncmp(buffer, "f ", 2))
+        {
+            ++mesh->faces_count;
+        }
     }
 
     mesh->vertices_size = mesh->vertices_count * 3;
     mesh->vtexture_size = mesh->vtexture_count * 2;
     mesh->vnormals_size = mesh->vnormals_count * 3;
+    mesh->faces_size = mesh->faces_count * 9;
 
     mesh->vertices = malloc(mesh->vertices_size * sizeof(float));
     mesh->vtexture = malloc(mesh->vtexture_size * sizeof(float));
     mesh->vnormals = malloc(mesh->vnormals_size * sizeof(float));
+    mesh->faces = malloc(mesh->faces_size * sizeof(int));
 
     rewind(file);
     int v_index = 0;
     int vt_index = 0;
     int vn_index = 0;
+    int f_index = 0;
 
     while (fgets(buffer, 1024, file))
     {
@@ -99,6 +112,23 @@ static obj_mesh_t *obj_parser_parse(char *obj_path)
             token = strtok_s(NULL, " ", &context);
             mesh->vnormals[vn_index + 2] = atof(token);
             vn_index += 3;
+        }
+
+        if (!strcmp(token, "f"))
+        {
+            for (size_t i = 0; i < 3; i++)
+            {
+
+                token = strtok_s(NULL, "/", &context);
+                mesh->faces[f_index + 0] = atoi(token);
+
+                token = strtok_s(NULL, "/", &context);
+                mesh->faces[f_index + 1] = atoi(token);
+
+                token = strtok_s(NULL, " ", &context);
+                mesh->faces[f_index + 2] = atoi(token);
+                f_index += 3;
+            }
         }
     }
 

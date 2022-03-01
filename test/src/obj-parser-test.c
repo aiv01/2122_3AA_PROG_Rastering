@@ -72,3 +72,37 @@ CLOVE_TEST(ObjReadAllQuadNormals)
 
    obj_parser_free(mesh);
 }
+
+CLOVE_TEST(ReadAllQuadFaces)
+{
+   obj_mesh_t *mesh = obj_parser_parse("bin\\test\\resources\\quad.obj");
+
+   CLOVE_INT_EQ(mesh->faces_count,2);
+   CLOVE_INT_EQ(mesh->faces_size,18);
+
+   CLOVE_INT_EQ(mesh->faces[0],4);
+   CLOVE_INT_EQ(mesh->faces[1],4);
+   CLOVE_INT_EQ(mesh->faces[2],1);
+
+   CLOVE_INT_EQ(mesh->faces[3],1);
+   CLOVE_INT_EQ(mesh->faces[4],2);
+   CLOVE_INT_EQ(mesh->faces[5],1);
+
+   CLOVE_INT_EQ(mesh->faces[6],3);
+   CLOVE_INT_EQ(mesh->faces[7],3);
+   CLOVE_INT_EQ(mesh->faces[8],1);
+
+   CLOVE_INT_EQ(mesh->faces[9],4);
+   CLOVE_INT_EQ(mesh->faces[10],4);
+   CLOVE_INT_EQ(mesh->faces[11],1);
+
+   CLOVE_INT_EQ(mesh->faces[12],2);
+   CLOVE_INT_EQ(mesh->faces[13],1);
+   CLOVE_INT_EQ(mesh->faces[14],1);
+
+   CLOVE_INT_EQ(mesh->faces[15],1);
+   CLOVE_INT_EQ(mesh->faces[16],2);
+   CLOVE_INT_EQ(mesh->faces[17],1);
+
+   obj_parser_free(mesh);
+}
