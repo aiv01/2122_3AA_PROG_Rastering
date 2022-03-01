@@ -12,6 +12,7 @@ scene* scene_create(int screen_width, int screen_height, SDL_Renderer* r) {
     //s->camera->position = (vector3_t){4.f, 6.f, 0.f};
     s->camera->position = (vector3_t){0.f, 0.f, 0.f};
     s->quad = obj_parser_parse("bin\\appl\\resources\\quad.obj");
+    s->suzanne = obj_parser_parse("bin\\appl\\resources\\suzanne.obj");
 
     if (!s->quad) { puts("ERROR reading quad.obj"); }
     return s;
@@ -40,6 +41,36 @@ void draw_quad(scene* s) {
     }
 }
 
+void draw_suzanne(scene* s, bool fillMode) {
+    obj_mesh_t* obj = s->suzanne;
+    float scale = 2.f;
+    vector3_t traslation = {0.f, 0.f, 5.f};
+    for(int i=0; i < obj->triangles_count; ++i) {
+        vector3_t* v1 = (vector3_t*)&(obj->triangles[i].v1.position);
+        vector3_t* v2 = (vector3_t*)&(obj->triangles[i].v2.position);
+        vector3_t* v3 = (vector3_t*)&(obj->triangles[i].v3.position);
+
+        vector3_t wv1 = vector3_mult_scalar(v1, 2.f);
+        vector3_t wv2 = vector3_mult_scalar(v2, 2.f);
+        vector3_t wv3 = vector3_mult_scalar(v3, 2.f);
+        wv1 = vector3_sub(&wv1, &traslation);
+        wv2 = vector3_sub(&wv2, &traslation);
+        wv3 = vector3_sub(&wv3, &traslation);
+
+        vector2_t sv1 = camera_world_to_screen_point(s->camera, &wv1);
+        vector2_t sv2 = camera_world_to_screen_point(s->camera, &wv2);
+        vector2_t sv3 = camera_world_to_screen_point(s->camera, &wv3);
+
+        if (fillMode) {
+            bbox_triangle_raster(s->screen, &sv1, &sv2, &sv3, color_red());
+        } else {
+            dda_line_raster(s->screen, sv1.x, sv1.y, sv2.x, sv2.y, color_red());
+            dda_line_raster(s->screen, sv2.x, sv2.y, sv3.x, sv3.y, color_yellow());
+            dda_line_raster(s->screen, sv3.x, sv3.y, sv1.x, sv1.y, color_green());
+        }
+    }
+}
+
 
 void scene_update(scene* s, float delta_time) {
     dda_line_raster(s->screen, 150, 200, 200, 100, color_red());
@@ -63,7 +94,9 @@ void scene_update(scene* s, float delta_time) {
     //bbox_triangle_raster(s->screen, &p1, &p2, &p3, color_red());
     //bbox_triangle_raster(s->screen, &p1, &p2, &p3, color_red());
 
-    draw_quad(s);
+    //draw_quad(s);
+
+    draw_suzanne(s, false);
 
     screen_blit(s->screen);
 }
@@ -72,5 +105,6 @@ void scene_destroy(scene* s) {
     screen_free(s->screen);
     camera_free(s->camera);
     obj_parser_free(s->quad);
+    obj_parser_free(s->suzanne);
     free(s);
 }

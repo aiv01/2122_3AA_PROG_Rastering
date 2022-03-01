@@ -9,6 +9,7 @@ typedef struct scene_t {
     screen_t* screen;
     camera_t* camera;
     obj_mesh_t* quad;
+    obj_mesh_t* suzanne;
 } scene;
 
 scene* scene_create(int w, int h, SDL_Renderer*);
