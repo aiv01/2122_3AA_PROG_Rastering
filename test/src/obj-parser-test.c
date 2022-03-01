@@ -106,3 +106,72 @@ CLOVE_TEST(ReadAllQuadFaces)
 
    obj_parser_free(mesh);
 }
+
+CLOVE_TEST(ReadAllQuadTriangle)
+{
+   obj_mesh_t *mesh = obj_parser_parse("bin\\test\\resources\\quad.obj");
+
+   CLOVE_INT_EQ(mesh->triangles_count, 2);
+
+   /* t1 v1 */
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v1.position.x, 1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v1.position.y, -1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v1.position.z, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v1.uv.x, 1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v1.uv.y, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v1.normal.x, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v1.normal.y, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v1.normal.z, 1.f);
+
+   /* t1 v2 */
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v2.position.x, -1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v2.position.y, 1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v2.position.z, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v2.uv.x, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v2.uv.y, 1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v2.normal.x, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v2.normal.y, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v2.normal.z, 1.f);
+
+   /* t1 v3 */
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v3.position.x, -1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v3.position.y, -1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v3.position.z, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v3.uv.x, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v3.uv.y, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v3.normal.x, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v3.normal.y, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[0].v3.normal.z, 1.f);
+
+   /* t2 v1 */
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v1.position.x, 1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v1.position.y, -1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v1.position.z, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v1.uv.x, 1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v1.uv.y, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v1.normal.x, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v1.normal.y, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v1.normal.z, 1.f);
+
+   /* t2 v2 */
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v2.position.x, 1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v2.position.y, 1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v2.position.z, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v2.uv.x, 1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v2.uv.y, 1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v2.normal.x, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v2.normal.y, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v2.normal.z, 1.f);
+
+   /* t2 v3 */
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v3.position.x, -1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v3.position.y, 1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v3.position.z, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v3.uv.x, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v3.uv.y, 1.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v3.normal.x, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v3.normal.y, 0.f);
+   CLOVE_FLOAT_EQ(mesh->triangles[1].v3.normal.z, 1.f);
+
+   obj_parser_free(mesh);
+}
