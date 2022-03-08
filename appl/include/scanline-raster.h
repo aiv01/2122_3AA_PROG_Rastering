@@ -11,6 +11,13 @@ typedef struct vertex_t {
 
 
 static void _sort_by_y(vertex_t** vx1, vertex_t** vx2, vertex_t** vx3) {
+    //issue: We alwasy need the "most recent" screen_pos because is potentially swapped by vertex
+    vertex_t* temp;
+    if ((*vx1)->screen_pos->y > (*vx2)->screen_pos->y) { temp = *vx1; *vx1 = *vx2; *vx2 = temp; }
+    if ((*vx2)->screen_pos->y > (*vx3)->screen_pos->y) { temp = *vx2; *vx2 = *vx3; *vx3 = temp; }
+    if ((*vx1)->screen_pos->y > (*vx2)->screen_pos->y) { temp = *vx1; *vx1 = *vx2; *vx2 = temp; }
+    
+    /*
     vector2_t* p1 = (*vx1)->screen_pos;
     vector2_t* p2 = (*vx2)->screen_pos;
     vector2_t* p3 = (*vx3)->screen_pos;
@@ -35,6 +42,7 @@ static void _sort_by_y(vertex_t** vx1, vertex_t** vx2, vertex_t** vx3) {
         *vx1 = *vx2;
         *vx2 = temp;
     }
+    */
 
 }
 
