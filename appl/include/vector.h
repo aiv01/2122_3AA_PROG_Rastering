@@ -1,5 +1,9 @@
 #pragma once
 #include <stdio.h>
+
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 typedef struct vector2_t {
     int x;
     int y;
@@ -30,3 +34,14 @@ static vector3_t vector3_mult_scalar(vector3_t* v, float scalar) {
 static void vector3_debug(vector3_t* v) {
     printf("v: (%f, %f, %f)\n", v->x, v->y, v->z);
 }
+
+static vector3_t vector3_rotate_y(vector3_t* v, float degrees) {
+    //x2 = r−u = cosβ*x1 − sinβ*y1
+    //y2 = t+s = sinβ*x1 + cosβ*y1
+    float rads = degrees * M_PI / 180.f;
+    vector3_t result;
+    result.x = cosf(rads) * v->x - sinf(rads) * v->z;
+    result.y = v->y;
+    result.z = sinf(rads) * v->x + cosf(rads) * v->z;
+    return result;
+} 

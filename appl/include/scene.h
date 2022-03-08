@@ -10,6 +10,7 @@ typedef struct scene_t {
     camera_t* camera;
     obj_mesh_t* quad;
     obj_mesh_t* suzanne;
+    float suzanne_rotation;
 } scene;
 
 scene* scene_create(int w, int h, SDL_Renderer*);

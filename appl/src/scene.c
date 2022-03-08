@@ -4,6 +4,7 @@
 #include "line-raster.h"
 #include "bbox-raster.h"
 #include "camera.h"
+#include "scanline-raster.h"
 
 scene* scene_create(int screen_width, int screen_height, SDL_Renderer* r) {
     scene* s = (scene*)malloc(sizeof(scene)); 
@@ -13,6 +14,7 @@ scene* scene_create(int screen_width, int screen_height, SDL_Renderer* r) {
     s->camera->position = (vector3_t){0.f, 0.f, 0.f};
     s->quad = obj_parser_parse("bin\\appl\\resources\\quad.obj");
     s->suzanne = obj_parser_parse("bin\\appl\\resources\\suzanne.obj");
+    s->suzanne_rotation = 0.f;
 
     if (!s->quad) { puts("ERROR reading quad.obj"); }
     return s;
@@ -41,9 +43,10 @@ void draw_quad(scene* s) {
     }
 }
 
-void draw_suzanne(scene* s, bool fillMode) {
+void draw_suzanne(scene* s, bool fillMode, float delta_time) {
     obj_mesh_t* obj = s->suzanne;
     float scale = 2.f;
+    s->suzanne_rotation += 2.f * delta_time;
     vector3_t traslation = {0.f, 0.f, 5.f};
     for(int i=0; i < obj->triangles_count; ++i) {
         vector3_t* v1 = (vector3_t*)&(obj->triangles[i].v1.position);
@@ -53,6 +56,11 @@ void draw_suzanne(scene* s, bool fillMode) {
         vector3_t wv1 = vector3_mult_scalar(v1, 2.f);
         vector3_t wv2 = vector3_mult_scalar(v2, 2.f);
         vector3_t wv3 = vector3_mult_scalar(v3, 2.f);
+
+        wv1 = vector3_rotate_y(&wv1, s->suzanne_rotation);
+        wv2 = vector3_rotate_y(&wv2, s->suzanne_rotation);
+        wv3 = vector3_rotate_y(&wv3, s->suzanne_rotation);
+
         wv1 = vector3_sub(&wv1, &traslation);
         wv2 = vector3_sub(&wv2, &traslation);
         wv3 = vector3_sub(&wv3, &traslation);
@@ -72,7 +80,57 @@ void draw_suzanne(scene* s, bool fillMode) {
 }
 
 
+void draw_suzanne_scanline(scene* s, bool fillMode, float delta_time) {
+    obj_mesh_t* obj = s->suzanne;
+    float scale = 2.f;
+    s->suzanne_rotation += 2.f * delta_time;
+    vector3_t traslation = {0.f, 0.f, 5.f};
+    
+    color_t red = color_red();
+    color_t green = color_green();
+    color_t yellow = color_yellow();
+    
+    for(int i=0; i < obj->triangles_count; ++i) {
+        vector3_t* v1 = (vector3_t*)&(obj->triangles[i].v1.position);
+        vector3_t* v2 = (vector3_t*)&(obj->triangles[i].v2.position);
+        vector3_t* v3 = (vector3_t*)&(obj->triangles[i].v3.position);
+
+        vector3_t wv1 = vector3_mult_scalar(v1, 2.f);
+        vector3_t wv2 = vector3_mult_scalar(v2, 2.f);
+        vector3_t wv3 = vector3_mult_scalar(v3, 2.f);
+
+        wv1 = vector3_rotate_y(&wv1, s->suzanne_rotation);
+        wv2 = vector3_rotate_y(&wv2, s->suzanne_rotation);
+        wv3 = vector3_rotate_y(&wv3, s->suzanne_rotation);
+
+        wv1 = vector3_sub(&wv1, &traslation);
+        wv2 = vector3_sub(&wv2, &traslation);
+        wv3 = vector3_sub(&wv3, &traslation);
+
+        vector2_t sv1 = camera_world_to_screen_point(s->camera, &wv1);
+        vector2_t sv2 = camera_world_to_screen_point(s->camera, &wv2);
+        vector2_t sv3 = camera_world_to_screen_point(s->camera, &wv3);
+
+        vertex_t vx1;
+        vx1.screen_pos = &sv1;
+        vx1.color = &red;
+
+        vertex_t vx2;
+        vx2.screen_pos = &sv2;
+        vx2.color = &green;
+
+        vertex_t vx3;
+        vx3.screen_pos = &sv3;
+        vx3.color = &yellow;
+
+        scanline_raster(s->screen, &vx1, &vx2, &vx3);
+    }
+}
+
 void scene_update(scene* s, float delta_time) {
+    screen_clear(s->screen);
+
+
     dda_line_raster(s->screen, 150, 200, 200, 100, color_red());
     dda_line_raster(s->screen, 100, 100, 150, 200, color_yellow());
     dda_line_raster(s->screen, 100, 100, 200, 100, color_green());
@@ -96,7 +154,9 @@ void scene_update(scene* s, float delta_time) {
 
     //draw_quad(s);
 
-    draw_suzanne(s, false);
+    //draw_suzanne(s, false, delta_time);
+
+    draw_suzanne_scanline(s, false, delta_time);
 
     screen_blit(s->screen);
 }
