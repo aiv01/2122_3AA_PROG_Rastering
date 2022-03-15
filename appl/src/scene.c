@@ -46,7 +46,7 @@ void draw_quad(scene* s) {
 void draw_suzanne(scene* s, bool fillMode, float delta_time) {
     obj_mesh_t* obj = s->suzanne;
     float scale = 2.f;
-    s->suzanne_rotation += 2.f * delta_time;
+    s->suzanne_rotation += 10.f * delta_time;
     vector3_t traslation = {0.f, 0.f, 5.f};
     for(int i=0; i < obj->triangles_count; ++i) {
         vector3_t* v1 = (vector3_t*)&(obj->triangles[i].v1.position);
@@ -111,17 +111,24 @@ void draw_suzanne_scanline(scene* s, bool fillMode, float delta_time) {
         vector2_t sv2 = camera_world_to_screen_point(s->camera, &wv2);
         vector2_t sv3 = camera_world_to_screen_point(s->camera, &wv3);
 
+        vector3_t cp1 = camera_world_to_camera_point(s->camera, &wv1);
+        vector3_t cp2 = camera_world_to_camera_point(s->camera, &wv2);
+        vector3_t cp3 = camera_world_to_camera_point(s->camera, &wv3);
+
         vertex_t vx1;
         vx1.screen_pos = &sv1;
         vx1.color = &red;
+        vx1.z_pos = cp1.z;
 
         vertex_t vx2;
         vx2.screen_pos = &sv2;
         vx2.color = &green;
+        vx2.z_pos = cp2.z;
 
         vertex_t vx3;
         vx3.screen_pos = &sv3;
         vx3.color = &yellow;
+        vx3.z_pos = cp3.z;
 
         scanline_raster(s->screen, &vx1, &vx2, &vx3);
     }

@@ -6,6 +6,7 @@
 typedef struct vertex_t {
     vector2_t* screen_pos; 
     color_t* color;
+    float z_pos;
 } vertex_t;
 
 
@@ -87,6 +88,9 @@ static void _interpolate_row(screen_t* screen, int y,
     color_t left_color = _interpolate_color(left_edge_vx1->color, left_edge_vx2->color, left_gradient_y);
     color_t right_color = _interpolate_color(right_edge_vx1->color, right_edge_vx2->color, right_gradient_y);
 
+    float left_z = _interpolate_scalar(left_edge_vx1->z_pos, left_edge_vx2->z_pos, left_gradient_y);
+    float right_z = _interpolate_scalar(right_edge_vx1->z_pos, right_edge_vx2->z_pos, right_gradient_y);
+
     //ATTENZIONE alla X;
 
     color_t red = color_red();
@@ -94,7 +98,8 @@ static void _interpolate_row(screen_t* screen, int y,
         float gradient_x = 1.f;
         if (left_x < right_x) gradient_x = (float)(x - left_x) / (float)(right_x - left_x);
         color_t color = _interpolate_color(&left_color, &right_color, gradient_x);
-        screen_put_pixel(screen, x, y, color);
+        float z = _interpolate_scalar(left_z, right_z, gradient_x);
+        screen_put_pixel(screen, x, y, z, color);
     }
 }
 

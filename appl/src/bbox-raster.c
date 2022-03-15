@@ -38,7 +38,7 @@ void bbox_triangle_raster(screen_t* screen, vector2_t* p1, vector2_t* p2, vector
         for(int y = y_min; y < y_max; ++y) {
             vector2_t point = {x, y};
             if (bbox_is_point_in_triangle(&point, p1, p2, p3)) {
-                screen_put_pixel(screen, point.x, point.y, c);
+                screen_put_pixel(screen, point.x, point.y, 0.f, c);
             }
         }
     }

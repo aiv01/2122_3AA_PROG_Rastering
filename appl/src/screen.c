@@ -12,10 +12,13 @@ screen_t* screen_new(int width, int height, SDL_Renderer* renderer) {
     screen->texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STATIC, width, height);
     screen->color_buffer_size = width * height * 4 * sizeof(Uint8);
     screen->color_buffer = (Uint8*)malloc(screen->color_buffer_size);
+    screen->depth_buffer_size = width * height * sizeof(float);
+    screen->depth_buffer = (float*)malloc(screen->depth_buffer_size);
     return screen;
 }
 
 void screen_free(screen_t* screen) {
+    free(screen->depth_buffer);
     free(screen->color_buffer);
     screen->height = 0;
     screen->width = 0;
@@ -26,9 +29,14 @@ void screen_free(screen_t* screen) {
     
 }
 
-void screen_put_pixel(screen_t* screen, int x, int y, color_t color) {
+void screen_put_pixel(screen_t* screen, int x, int y, float z, color_t color) {
     if (x < 0 || x >= screen->width) return;
     if (y < 0 || y >= screen->height) return;
+
+    int depth_index = screen->width * y + x;
+    float current_z = screen->depth_buffer[depth_index];
+    if (current_z > z) return;
+    screen->depth_buffer[depth_index] = z;
 
     int index = (screen->width * y + x) * 4;
     screen->color_buffer[index + 0] = color.r;
@@ -44,4 +52,5 @@ void screen_blit(screen_t* screen) {
 
 void screen_clear(screen_t* screen) {
     memset(screen->color_buffer, 0, screen->color_buffer_size);
+    memset(screen->depth_buffer, 0xff, screen->depth_buffer_size);
 }

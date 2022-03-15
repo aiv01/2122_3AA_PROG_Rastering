@@ -48,3 +48,8 @@ static vector2_t camera_world_to_screen_point(camera_t* camera, vector3_t* world
 
     return (vector2_t){screen_x, screen_y};
 }
+
+static vector3_t camera_world_to_camera_point(camera_t* camera, vector3_t* world_point) {
+    vector3_t camera_point = vector3_sub(world_point, &camera->position);
+    return camera_point;
+}
