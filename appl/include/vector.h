@@ -9,6 +9,12 @@ typedef struct vector2_t {
     int y;
 } vector2_t;
 
+typedef struct vector2f_t {
+    float x;
+    float y;
+} vector2f_t;
+
+//TODO: Renaming with ending f
 typedef struct vector3_t {
     float x;
     float y;
