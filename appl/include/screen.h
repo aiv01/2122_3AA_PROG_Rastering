@@ -1,10 +1,10 @@
 #pragma once
 //#include <SDL.h>
 typedef struct color_t {
-    unsigned char r;
-    unsigned char g;
-    unsigned char b;
-    unsigned char a;
+    int r;
+    int g;
+    int b;
+    int a;
 } color_t;
 
 static color_t color_red() {
@@ -17,6 +17,37 @@ static color_t color_yellow() {
 
 static color_t color_green() {
     return (color_t){0, 255, 0, 255};
+}
+
+static color_t color_gray_light() {
+    return (color_t){128, 128, 128, 255};
+}
+
+static color_t color_mult(color_t* color, float scalar) {
+    color_t result;
+    result.r = color->r * scalar;
+    result.g = color->g * scalar;
+    result.b = color->b * scalar;
+    result.a = color->a * scalar;
+    return result;
+}
+
+static color_t color_add(color_t* c1, color_t* c2) {
+    color_t r;
+    r.r = c1->r + c2->r;
+    r.g = c1->g + c2->g;
+    r.b = c1->b + c2->b;
+    r.a = c1->a + c2->a;
+    return r;
+}
+
+static color_t color_clamp(color_t* c1) {
+    color_t r;
+    r.r = (c1->r > 255) ? 255 : c1->r;
+    r.g = (c1->g > 255) ? 255 : c1->g;
+    r.b = (c1->b > 255) ? 255 : c1->b;
+    r.a = (c1->a > 255) ? 255 : c1->a;
+    return r;
 }
 
 struct SDL_Renderer;
@@ -46,4 +77,4 @@ void screen_free(screen_t* screen);
 void screen_put_pixel(screen_t* screen, int x, int y, float z, color_t color);
 void screen_blit(screen_t* screen);
 void screen_clear(screen_t* screen);
-
+void screen_clear_color(screen_t* screen, color_t* color);

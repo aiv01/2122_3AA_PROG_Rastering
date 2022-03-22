@@ -20,6 +20,12 @@ typedef struct scene_t {
     
     obj_mesh_t* quad;
     texture_t* quad_texture;
+
+    obj_mesh_t* trup;
+    float trup_rotation;
+    texture_t* trup_texture;
+
+    vector3_t point_light_position;
 } scene;
 
 scene* scene_create(int w, int h, SDL_Renderer*);

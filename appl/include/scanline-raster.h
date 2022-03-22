@@ -8,6 +8,8 @@ typedef struct vertex_t {
     color_t* color;
     float z_pos;
     vector2f_t* text_pos;
+    vector3_t* norm_dir;
+    vector3_t* world_pos;
 } vertex_t;
 
 
@@ -69,6 +71,14 @@ static vector2f_t _interpolate_vector2f(vector2f_t* v1, vector2f_t* v2, float gr
     return r;
 }
 
+static vector3_t _interpolate_vector3f(vector3_t* v1, vector3_t* v2, float gradient) {
+    vector3_t r;
+    r.x = _interpolate_scalar(v1->x, v2->x, gradient);
+    r.y = _interpolate_scalar(v1->y, v2->y, gradient);
+    r.z = _interpolate_scalar(v1->z, v2->z, gradient);
+    return r;
+}
+
 static void _interpolate_row(vgpu_t* gpu, int y, 
         vertex_t* left_edge_vx1, vertex_t* left_edge_vx2,
         vertex_t* right_edge_vx1, vertex_t* right_edge_vx2
@@ -111,6 +121,12 @@ static void _interpolate_row(vgpu_t* gpu, int y,
         right_uv = _interpolate_vector2f(right_edge_vx1->text_pos, right_edge_vx2->text_pos, right_gradient_y);
     }
 
+    vector3_t left_world_pos = _interpolate_vector3f(left_edge_vx1->world_pos, left_edge_vx2->world_pos, left_gradient_y);
+    vector3_t right_world_pos = _interpolate_vector3f(right_edge_vx1->world_pos, right_edge_vx2->world_pos, right_gradient_y);
+
+    vector3_t left_world_norm = _interpolate_vector3f(left_edge_vx1->norm_dir, left_edge_vx2->norm_dir, left_gradient_y);
+    vector3_t right_world_norm = _interpolate_vector3f(right_edge_vx1->norm_dir, right_edge_vx2->norm_dir, right_gradient_y);
+
     //ATTENZIONE alla X;
     for(int x = left_x; x <= right_x; ++x) {
         float gradient_x = 1.f;
@@ -128,8 +144,8 @@ static void _interpolate_row(vgpu_t* gpu, int y,
 
             float uv_y_flipped = 1.f - uv.y;
             //attenzione: tenere in considerazione il "rolling" della uv
-            int text_x =  (int)( (float)text->width * uv.x);
-            int text_y =  (int)( (float)text->height * uv_y_flipped);
+            int text_x =  (int)( (float)(text->width-1) * uv.x) % (text->width-1);
+            int text_y =  (int)( (float)(text->height-1) * uv_y_flipped) % (text->height-1);
             int text_index = (text->width * text_y + text_x) * text->pixel_size;
             //TODO: Da migliorare e rendere dinamico rispetto al pixel size (memcpy?)
             color.r = text->data[text_index + 0];
@@ -137,7 +153,41 @@ static void _interpolate_row(vgpu_t* gpu, int y,
             color.b = text->data[text_index + 2];
             color.a = text->data[text_index + 3];
         }
-        screen_put_pixel(gpu->screen, x, y, z, color);
+
+        //PHONG
+        //1. Ambient
+        float ambient_intensity = 0.1f;
+        color_t ambient = color_mult(&color, ambient_intensity);
+
+        //2. Diffuse
+        vector3_t world_pos = _interpolate_vector3f(&left_world_pos, &right_world_pos, gradient_x);
+        vector3_t dir_to_light = vector3_sub(gpu->point_light_pos, &world_pos);
+        dir_to_light = vector3_norm(&dir_to_light);
+
+        vector3_t world_norm = _interpolate_vector3f(&left_world_norm, &right_world_norm, gradient_x);
+        world_norm = vector3_norm(&world_norm);
+
+        float cosLN = vector3_dot(&dir_to_light, &world_norm);
+        float labert = clampf(cosLN, 0.f, 1.f);
+        color_t diffuse = color_mult(&color, labert);
+
+        //3. Specular
+        vector3_t dir_to_eye = vector3_sub(gpu->camera_pos, &world_pos);
+        dir_to_eye = vector3_norm(&dir_to_eye);
+
+        vector3_t dir_light_to_point = vector3_mult_scalar(&dir_to_light, -1.f);
+        vector3_t dir_light_reflected = vector3_reflect(&dir_light_to_point, &world_norm);
+        float cosER = vector3_dot(&dir_to_eye, &dir_light_reflected);
+        float specular_value = clampf(cosER, 0.f, 1.f);
+        color_t specular_color = {255, 255, 255, 255};
+        color_t specular = color_mult(&specular_color, powf(specular_value, 50.f));
+
+        color_t final_color = {0, 0, 0, 0};
+        final_color = color_add(&final_color, &ambient);
+        final_color = color_add(&final_color, &diffuse);
+        final_color = color_add(&final_color, &specular);
+        final_color = color_clamp(&final_color);
+        screen_put_pixel(gpu->screen, x, y, z, final_color);
     }
 }
 

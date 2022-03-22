@@ -54,3 +54,13 @@ void screen_clear(screen_t* screen) {
     memset(screen->color_buffer, 0, screen->color_buffer_size);
     memset(screen->depth_buffer, 0xff, screen->depth_buffer_size);
 }
+
+void screen_clear_color(screen_t* screen, color_t* color) {
+    for(int i=0; i < screen->width * screen->height; ++i) {
+        screen->color_buffer[i * 4 + 0] = color->r;
+        screen->color_buffer[i * 4 + 1] = color->g;
+        screen->color_buffer[i * 4 + 2] = color->b;
+        screen->color_buffer[i * 4 + 3] = color->a;
+    }
+    memset(screen->depth_buffer, 0xff, screen->depth_buffer_size);
+}

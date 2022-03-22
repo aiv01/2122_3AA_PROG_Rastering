@@ -12,4 +12,6 @@ typedef struct vgpu_t {
     screen_t* screen;
     texture_t* texture;
     vgpu_flags_e flags;
+    vector3_t* point_light_pos;
+    vector3_t* camera_pos;
 } vgpu_t;
