@@ -80,3 +80,11 @@ static float clampf(float value, float min, float max) {
     if (value > max) return max;
     return value;
 }
+
+static vector3_t vector3_cross(vector3_t* v1, vector3_t* v2) {
+    vector3_t r;
+    r.x = v1->y * v2->z - v1->z * v2->y;
+    r.y = v1->z * v2->x - v1->x * v2->z;
+    r.z = v1->x * v2->y - v1->y * v2->x;
+    return r;
+}

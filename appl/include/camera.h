@@ -1,6 +1,7 @@
 #pragma once
 #include "vector.h"
 #include <math.h>
+#include <stdbool.h>
 
 typedef struct camera_t {
     vector3_t position;
@@ -8,6 +9,8 @@ typedef struct camera_t {
     float aspect_ratio;
     int width;
     int height;
+    float z_near;
+    float z_far;
 } camera_t;
 
 static camera_t* camera_new(float vertical_fov_degrees, int width, int height) {
@@ -22,6 +25,8 @@ static camera_t* camera_new(float vertical_fov_degrees, int width, int height) {
     cam->aspect_ratio = (float)width / (float)height;
     cam->width = width;
     cam->height = height;
+    cam->z_near = 0.1f;
+    cam->z_far = 10.f;
     return cam;
 }
 
@@ -53,3 +58,26 @@ static vector3_t camera_world_to_camera_point(camera_t* camera, vector3_t* world
     vector3_t camera_point = vector3_sub(world_point, &camera->position);
     return camera_point;
 }
+
+static bool triangle_is_facing_camera(vector3_t* cp1, vector3_t* cp2, vector3_t* cp3) {
+    vector3_t v12 = vector3_sub(cp2, cp1);
+    vector3_t v13 = vector3_sub(cp3, cp1);
+
+    vector3_t face_normal = vector3_cross(&v12, &v13);
+
+    vector3_t cp1_to_camera = vector3_mult_scalar(cp1, -1.f);
+
+    float dot = vector3_dot(&cp1_to_camera, &face_normal); 
+    if (dot >= 0) return true;
+    return false;
+}
+
+static bool triangle_is_within_camera(camera_t* camera, vector2_t* sv1, float cz1, vector2_t* sv2, float cz2, vector2_t* sv3, float cz3) {
+    if (sv1->x < 0 && sv2->x < 0 && sv3->x < 0) return false;
+    if (sv1->y < 0 && sv2->y < 0 && sv3->y < 0) return false;
+    if (sv1->x >= camera->width && sv2->x >= camera->width && sv3->x >= camera->width) return false;
+    if (sv1->y >= camera->height && sv2->y >= camera->height && sv3->y >= camera->height) return false;
+    if (-cz1 < camera->z_near && -cz2 < camera->z_near && -cz3 < camera->z_near) return false;
+    if (-cz1 > camera->z_far && -cz2 > camera->z_far && -cz3 > camera->z_far) return false;
+    return true;
+} 

@@ -188,9 +188,9 @@ void draw_quad_scanline_texture(scene* s) {
         vector3_t wv1 = vector3_mult_scalar(v1, 2.f);
         vector3_t wv2 = vector3_mult_scalar(v2, 2.f);
         vector3_t wv3 = vector3_mult_scalar(v3, 2.f);
-        wv1.z = -10.f;
-        wv2.z = -10.f;
-        wv3.z = -10.f;
+        wv1.z = -6.f;
+        wv2.z = -6.f;
+        wv3.z = -6.f;
 
         vector2_t sv1 = camera_world_to_screen_point(s->camera, &wv1);
         vector2_t sv2 = camera_world_to_screen_point(s->camera, &wv2);
@@ -227,7 +227,7 @@ void draw_trup_scanline_texture(scene* s, float delta_time) {
       
     vgpu_t gpu;
     gpu.screen = s->screen;
-    gpu.flags = VGPU_FLAG_TEXTURE;
+    gpu.flags = VGPU_FLAG_TEXTURE | VGPU_FLAG_PHONG;
     gpu.texture = s->trup_texture;
     gpu.point_light_pos = &(s->point_light_position);
     gpu.camera_pos = &(s->camera->position);
@@ -262,6 +262,10 @@ void draw_trup_scanline_texture(scene* s, float delta_time) {
         vector3_t cp1 = camera_world_to_camera_point(s->camera, &wv1);
         vector3_t cp2 = camera_world_to_camera_point(s->camera, &wv2);
         vector3_t cp3 = camera_world_to_camera_point(s->camera, &wv3);
+
+
+        if (!triangle_is_facing_camera(&cp1, &cp2, &cp3)) continue;
+        if (!triangle_is_within_camera(s->camera, &sv1, cp1.z, &sv2, cp2.z, &sv3, cp3.z)) continue;
 
 
         vertex_t vx1;
@@ -321,9 +325,10 @@ void scene_update(scene* s, float delta_time) {
 
     //draw_suzanne_scanline(s, false, delta_time);
 
+    draw_trup_scanline_texture(s, delta_time);
+    
     //draw_quad_scanline_texture(s);
     
-    draw_trup_scanline_texture(s, delta_time);
 
     screen_blit(s->screen);
 }

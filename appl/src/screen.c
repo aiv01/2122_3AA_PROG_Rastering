@@ -39,10 +39,26 @@ void screen_put_pixel(screen_t* screen, int x, int y, float z, color_t color) {
     screen->depth_buffer[depth_index] = z;
 
     int index = (screen->width * y + x) * 4;
-    screen->color_buffer[index + 0] = color.r;
-    screen->color_buffer[index + 1] = color.g;
-    screen->color_buffer[index + 2] = color.b;
-    screen->color_buffer[index + 3] = color.a;
+
+    color_t back_color;
+    back_color.r = screen->color_buffer[index + 0];
+    back_color.g = screen->color_buffer[index + 1];
+    back_color.b = screen->color_buffer[index + 2];
+    back_color.a = screen->color_buffer[index + 3];
+
+    //color_t* back_color = (color_t*)(screen->color_buffer + index);
+    //Alpha Blending: front_alpha * front_color + (1 - front_alpha)*back_color
+
+    float alpha = (float)color.a / 255.f; // 0 = fully trasparent
+    back_color.r = alpha * (float)color.r + (1.f - alpha) * back_color.r;
+    back_color.g = alpha * (float)color.g + (1.f - alpha) * back_color.g;
+    back_color.b = alpha * (float)color.b + (1.f - alpha) * back_color.b;
+    back_color.a = color.a + (float)back_color.a * (1.f - alpha);
+    
+    screen->color_buffer[index + 0] = (unsigned char)back_color.r;
+    screen->color_buffer[index + 1] = (unsigned char)back_color.g;
+    screen->color_buffer[index + 2] = (unsigned char)back_color.b;
+    screen->color_buffer[index + 3] = (unsigned char)back_color.a;
 }
 
 void screen_blit(screen_t* screen) {

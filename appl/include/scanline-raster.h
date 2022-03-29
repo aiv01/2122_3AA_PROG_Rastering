@@ -121,11 +121,17 @@ static void _interpolate_row(vgpu_t* gpu, int y,
         right_uv = _interpolate_vector2f(right_edge_vx1->text_pos, right_edge_vx2->text_pos, right_gradient_y);
     }
 
-    vector3_t left_world_pos = _interpolate_vector3f(left_edge_vx1->world_pos, left_edge_vx2->world_pos, left_gradient_y);
-    vector3_t right_world_pos = _interpolate_vector3f(right_edge_vx1->world_pos, right_edge_vx2->world_pos, right_gradient_y);
+    vector3_t left_world_pos;
+    vector3_t right_world_pos;
+    vector3_t left_world_norm;
+    vector3_t right_world_norm;   
+    if (gpu->flags & VGPU_FLAG_PHONG) {
+        left_world_pos = _interpolate_vector3f(left_edge_vx1->world_pos, left_edge_vx2->world_pos, left_gradient_y);
+        right_world_pos = _interpolate_vector3f(right_edge_vx1->world_pos, right_edge_vx2->world_pos, right_gradient_y);
 
-    vector3_t left_world_norm = _interpolate_vector3f(left_edge_vx1->norm_dir, left_edge_vx2->norm_dir, left_gradient_y);
-    vector3_t right_world_norm = _interpolate_vector3f(right_edge_vx1->norm_dir, right_edge_vx2->norm_dir, right_gradient_y);
+        left_world_norm = _interpolate_vector3f(left_edge_vx1->norm_dir, left_edge_vx2->norm_dir, left_gradient_y);
+        right_world_norm = _interpolate_vector3f(right_edge_vx1->norm_dir, right_edge_vx2->norm_dir, right_gradient_y);
+    }
 
     //ATTENZIONE alla X;
     for(int x = left_x; x <= right_x; ++x) {
@@ -154,40 +160,51 @@ static void _interpolate_row(vgpu_t* gpu, int y,
             color.a = text->data[text_index + 3];
         }
 
-        //PHONG
-        //1. Ambient
-        float ambient_intensity = 0.1f;
-        color_t ambient = color_mult(&color, ambient_intensity);
+        if (gpu->flags & VGPU_FLAG_PHONG) {
+            //PHONG
+            //1. Ambient
+            float ambient_intensity = 0.1f;
+            color_t ambient = color_mult(&color, ambient_intensity);
 
-        //2. Diffuse
-        vector3_t world_pos = _interpolate_vector3f(&left_world_pos, &right_world_pos, gradient_x);
-        vector3_t dir_to_light = vector3_sub(gpu->point_light_pos, &world_pos);
-        dir_to_light = vector3_norm(&dir_to_light);
+            //2. Diffuse
+            vector3_t world_pos = _interpolate_vector3f(&left_world_pos, &right_world_pos, gradient_x);
+            vector3_t dir_to_light = vector3_sub(gpu->point_light_pos, &world_pos);
+            dir_to_light = vector3_norm(&dir_to_light);
 
-        vector3_t world_norm = _interpolate_vector3f(&left_world_norm, &right_world_norm, gradient_x);
-        world_norm = vector3_norm(&world_norm);
+            vector3_t world_norm = _interpolate_vector3f(&left_world_norm, &right_world_norm, gradient_x);
+            world_norm = vector3_norm(&world_norm);
 
-        float cosLN = vector3_dot(&dir_to_light, &world_norm);
-        float labert = clampf(cosLN, 0.f, 1.f);
-        color_t diffuse = color_mult(&color, labert);
+            float cosLN = vector3_dot(&dir_to_light, &world_norm);
+            float labert = clampf(cosLN, 0.f, 1.f);
+            color_t diffuse = color_mult(&color, labert);
 
-        //3. Specular
-        vector3_t dir_to_eye = vector3_sub(gpu->camera_pos, &world_pos);
-        dir_to_eye = vector3_norm(&dir_to_eye);
+            //3. Specular
+            vector3_t dir_to_eye = vector3_sub(gpu->camera_pos, &world_pos);
+            dir_to_eye = vector3_norm(&dir_to_eye);
 
-        vector3_t dir_light_to_point = vector3_mult_scalar(&dir_to_light, -1.f);
-        vector3_t dir_light_reflected = vector3_reflect(&dir_light_to_point, &world_norm);
-        float cosER = vector3_dot(&dir_to_eye, &dir_light_reflected);
-        float specular_value = clampf(cosER, 0.f, 1.f);
-        color_t specular_color = {255, 255, 255, 255};
-        color_t specular = color_mult(&specular_color, powf(specular_value, 50.f));
+            vector3_t dir_light_to_point = vector3_mult_scalar(&dir_to_light, -1.f);
+            vector3_t dir_light_reflected = vector3_reflect(&dir_light_to_point, &world_norm);
+            float cosER = vector3_dot(&dir_to_eye, &dir_light_reflected);
+            float specular_value = clampf(cosER, 0.f, 1.f);
+            color_t specular_color = {255, 255, 255, 255};
+            color_t specular = color_mult(&specular_color, powf(specular_value, 50.f));
 
-        color_t final_color = {0, 0, 0, 0};
-        final_color = color_add(&final_color, &ambient);
-        final_color = color_add(&final_color, &diffuse);
-        final_color = color_add(&final_color, &specular);
-        final_color = color_clamp(&final_color);
-        screen_put_pixel(gpu->screen, x, y, z, final_color);
+            color_t final_color = {0, 0, 0, 0};
+            final_color = color_add(&final_color, &ambient);
+            final_color = color_add(&final_color, &diffuse);
+            final_color = color_add(&final_color, &specular);
+            final_color = color_clamp(&final_color);
+            color = final_color;
+            color.a = 255; //workaround temporaneo
+
+            //Raw Outline 
+            float cos_outline = vector3_dot(&dir_to_eye, &world_norm);
+            if (cos_outline > 0.f && cos_outline < 0.6f) {
+                color = color_red();
+            }
+        }
+
+        screen_put_pixel(gpu->screen, x, y, z, color);
     }
 }
 
